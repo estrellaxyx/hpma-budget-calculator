@@ -57,7 +57,8 @@
             </div>
         </div>
     </div>
-
+    <input type="checkbox" id="if-rare" name="if-rare" value="rare">
+      <label for="if-rare">是否考虑稀有色金品</label><br>
     <button type="button" onclick="calculate()">计算</button>
 
     <h3>计算结果:</h3>
@@ -118,51 +119,52 @@
         }
 
         function calculate() {
-    const goldCalc = parseInt(document.getElementById('gold-calc').value);
-    let goldRemaining = goldCalc;
+            const goldCalc = parseInt(document.getElementById('gold-calc').value);
+            let goldRemaining = goldCalc;
 
-    let results = "";  // Accumulate results as a single string
+            let results = "";  // Accumulate results as a single string
 
-    selectedOptions.forEach(optionName => {
-        const optionItem = document.querySelector(`.option-item[data-name="${optionName}"]`);
-        const result = processOption(optionItem, goldRemaining);
-        results += result.html;
-        goldRemaining = result.goldRemaining;
-    });
+            selectedOptions.forEach(optionName => {
+                const optionItem = document.querySelector(`.option-item[data-name="${optionName}"]`);
+                const result = processOption(optionItem, goldRemaining);
+                results += result.html;
+                goldRemaining = result.goldRemaining;
+            });
 
-    results += `<br>金币剩余: ${goldRemaining}`;
-    document.getElementById('results').innerHTML = results;  // Set the innerHTML only once
-}
-
-function processOption(optionItem, goldRemaining) {
-    const optionName = optionItem.getAttribute('data-name');
-    const goldPrices = priceList[optionName].gold;
-
-    let totalQty = 0;
-    let quantities = [0, 0, 0, 0]; // To store quantities for each quality
-
-    // Prioritize purchasing from the highest quality to the lowest quality
-    for (let k = 0; k < goldPrices.length; k++) {
-        if (goldPrices[k] <= goldRemaining) {
-            let maxQty = Math.floor(goldRemaining / goldPrices[k]);
-            quantities[k] = maxQty;
-            totalQty += maxQty;
-            goldRemaining -= maxQty * goldPrices[k];
+            results += `<br>金币剩余: ${goldRemaining}`;
+            document.getElementById('results').innerHTML = results;  // Set the innerHTML only once
         }
-    }
 
-    // Accumulate the result string
-    const result = `${optionName}: 数量 = ${totalQty}<br>
-    明细: 稀有色金品: ${quantities[0]}, 金品: ${quantities[1]}, 紫品: ${quantities[2]}, 蓝品: ${quantities[3]}<br><br>`;
+        function processOption(optionItem, goldRemaining) {
+            const optionName = optionItem.getAttribute('data-name');
+            const goldPrices = priceList[optionName].gold;
 
-    return {
-        html: result,
-        goldRemaining: goldRemaining
-    };
-}
+            let totalQty = 0;
+            let quantities = [0, 0, 0, 0]; // To store quantities for each quality
 
+            // Prioritize purchasing from the highest quality to the lowest quality
+            let k = 0;
+            if(document.getElementById("if-rare").checked ==false){
+                k = 1;
+            }
+            for (i; k < goldPrices.length; k++) {
+                if (goldPrices[k] <= goldRemaining) {
+                    let maxQty = Math.floor(goldRemaining / goldPrices[k]);
+                    quantities[k] = maxQty;
+                    totalQty += maxQty;
+                    goldRemaining -= maxQty * goldPrices[k];
+                }
+            }
 
+            // Accumulate the result string
+            const result = `${optionName}: 数量 = ${totalQty}<br>
+            明细: 稀有色金品: ${quantities[0]}, 金品: ${quantities[1]}, 紫品: ${quantities[2]}, 蓝品: ${quantities[3]}<br><br>`;
 
+            return {
+                html: result,
+                goldRemaining: goldRemaining
+            };
+        }
         // Initialize the options when the page loads
         window.onload = initOptions;
     </script>
