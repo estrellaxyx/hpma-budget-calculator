@@ -50,3 +50,98 @@
     <input type="number" id="gold-calc" required>
 
     <div class="container">
+        <div class="options-box">
+            <label for="option-input">请选择高价回收草药:</label>
+            <div id="options-list">
+                <!-- Options will be added here as buttons -->
+            </div>
+        </div>
+    </div>
+
+    <button type="button" onclick="calculate()">计算</button>
+
+    <h3>计算结果:</h3>
+    <div id="results"></div>
+
+    <script>
+        // Prices for each item with four different qualities (in gold)
+        const priceList = {
+            "项1": { "gold": [100, 60, 40, 20] },
+            "项2": { "gold": [150, 90, 60, 30] },
+            "项3": { "gold": [120, 70, 45, 25] },
+            "项4": { "gold": [180, 120, 80, 40] },
+            "项5": { "gold": [140, 85, 55, 30] }
+        };
+
+        let selectedOptions = [];
+
+        // Initialize the options as buttons
+        function initOptions() {
+            const optionsList = document.getElementById('options-list');
+            for (const optionName in priceList) {
+                const optionItem = document.createElement('div');
+                optionItem.className = 'option-item';
+                optionItem.innerText = optionName;
+                optionItem.setAttribute('data-name', optionName);
+                optionItem.onclick = toggleOption;
+                optionsList.appendChild(optionItem);
+            }
+        }
+
+        // Toggle the selection state of an option
+        function toggleOption() {
+            const optionName = this.getAttribute('data-name');
+            if (selectedOptions.includes(optionName)) {
+                selectedOptions = selectedOptions.filter(item => item !== optionName);
+                this.classList.remove('selected');
+            } else {
+                selectedOptions.push(optionName);
+                this.classList.add('selected');
+            }
+        }
+
+        function calculate() {
+            const goldCalc = parseInt(document.getElementById('gold-calc').value);
+            let goldRemaining = goldCalc;
+
+            let results = "";
+
+            selectedOptions.forEach(optionName => {
+                const optionItem = document.querySelector(`.option-item[data-name="${optionName}"]`);
+                goldRemaining = processOption(optionItem, goldRemaining);
+            });
+
+            results += `<br>金币剩余: ${goldRemaining}`;
+            document.getElementById('results').innerHTML = results;
+        }
+
+        function processOption(optionItem, goldRemaining) {
+            const optionName = optionItem.getAttribute('data-name');
+            const goldPrices = priceList[optionName].gold;
+
+            let totalQty = 0;
+            let quantities = [0, 0, 0, 0]; // To store quantities for each quality
+
+            // Prioritize purchasing from the highest quality to the lowest quality
+            for (let k = 0; k < goldPrices.length; k++) {
+                if (goldPrices[k] <= goldRemaining) {
+                    let maxQty = Math.floor(goldRemaining / goldPrices[k]);
+                    quantities[k] = maxQty;
+                    totalQty += maxQty;
+                    goldRemaining -= maxQty * goldPrices[k];
+                }
+            }
+
+            // Display results
+            const result = `${optionName}: 可购数量 = ${totalQty}<br>
+            购买明细: 质量1: ${quantities[0]}, 质量2: ${quantities[1]}, 质量3: ${quantities[2]}, 质量4: ${quantities[3]}<br><br>`;
+            document.getElementById('results').innerHTML += result;
+
+            return goldRemaining;
+        }
+
+        // Initialize the options when the page loads
+        window.onload = initOptions;
+    </script>
+</body>
+</html>
