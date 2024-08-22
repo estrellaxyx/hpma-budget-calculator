@@ -147,8 +147,8 @@
             if(document.getElementById("if-rare").checked ==false){
                 k = 1;
             }
-            for (i; k < goldPrices.length; k++) {
-                if (goldPrices[k] <= goldRemaining) {
+            for (k; k < goldPrices.length; k++) {
+                if (goldPrices[k] <= goldRemaining && goldPrices[k] != 0) {
                     let maxQty = Math.floor(goldRemaining / goldPrices[k]);
                     quantities[k] = maxQty;
                     totalQty += maxQty;
