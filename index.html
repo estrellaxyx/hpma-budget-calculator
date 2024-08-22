@@ -35,12 +35,12 @@
     </style>
 </head>
 <body>
-    <h2>高价回收 (Gold Calculation Tool)</h2>
+    <h2>高价回收</h2>
+
+    <label for="gem-calc">高价回收宝石预算:</label>
+    <input type="number" id="gem-calc" required>
 
     <label for="gold-calc">高价回收金币预算:</label>
-												
-
-															
     <input type="number" id="gold-calc" required>
 
     <div class="options-box">
@@ -57,13 +57,13 @@
     <div id="results"></div>
 
     <script>
-        // Prices for each item with four different qualities (in gold)
+        // Prices for each item with four different qualities (in either gems or gold)
         const priceList = {
-            "项1": { "gold": [100, 60, 40, 20] },
-            "项2": { "gold": [150, 90, 60, 30] },
-            "项3": { "gold": [120, 70, 45, 25] },
-            "项4": { "gold": [180, 120, 80, 40] },
-            "项5": { "gold": [140, 85, 55, 30] }
+            "项1": { "gem": [5, 2, 0, 0], "gold": [0, 0, 40, 20] },
+            "项2": { "gem": [80, 50, 30, 15], "gold": [150, 90, 60, 30] },
+            "项3": { "gem": [60, 40, 25, 12], "gold": [120, 70, 45, 25] },
+            "项4": { "gem": [90, 60, 40, 20], "gold": [180, 120, 80, 40] },
+            "项5": { "gem": [70, 45, 30, 15], "gold": [140, 85, 55, 30] }
         };
 
         function addOption() {
@@ -86,10 +86,10 @@
         }
 
         function calculate() {
-																				
+            const gemCalc = parseInt(document.getElementById('gem-calc').value);
             const goldCalc = parseInt(document.getElementById('gold-calc').value);
 
-									   
+            let gemRemaining = gemCalc;
             let goldRemaining = goldCalc;
 
             const optionsList = document.getElementById('options-list').children;
@@ -98,21 +98,21 @@
             for (let i = 0; i < optionsList.length; i++) {
                 const optionItem = optionsList[i];
                 const optionName = optionItem.getAttribute('data-name');
-															
+                const gemPrices = priceList[optionName].gem;
                 const goldPrices = priceList[optionName].gold;
 
-                let maxGoldQty = 0;
-                let chosenGoldQuality = -1;
+                let maxGemQty = 0, maxGoldQty = 0;
+                let chosenGemQuality = -1, chosenGoldQuality = -1;
 
-																							 
-															
-													   
-																			
-											 
-																 
-																		
-					 
-				 
+                // Calculate the maximum quantity for gems, starting from the highest quality
+                for (let j = 0; j < gemPrices.length; j++) {
+                    if (gemPrices[j] <= gemRemaining) {
+                        maxGemQty = Math.floor(gemRemaining / gemPrices[j]);
+                        chosenGemQuality = j;
+                        gemRemaining -= maxGemQty * gemPrices[j];
+                        break;  // Only use the highest possible quality
+                    }
+                }
 
                 // Calculate the maximum quantity for gold, starting from the highest quality
                 for (let k = 0; k < goldPrices.length; k++) {
@@ -126,14 +126,14 @@
 
                 // Display results
                 results += `${optionName}:
-																					
-                可购数量 = ${maxGoldQty} (品质: ${chosenGoldQuality + 1})<br>`;
+                可购宝石数量 = ${maxGemQty} (品质: ${chosenGemQuality + 1}),
+                可购金件数量 = ${maxGoldQty} (品质: ${chosenGoldQuality + 1})<br>`;
 
                 // Update input fields with the maximum quantities
-                optionItem.querySelector('input').value = maxGoldQty;
+                optionItem.querySelector('input').value = maxGemQty + maxGoldQty;
             }
 
-														   
+            results += `<br>宝石剩余: ${gemRemaining}`;
             results += `<br>金件剩余: ${goldRemaining}`;
 
             document.getElementById('results').innerHTML = results;
