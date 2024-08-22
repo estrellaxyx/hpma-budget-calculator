@@ -13,12 +13,18 @@
             margin: 10px 0;
             display: block;
         }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
         .options-box {
             margin-top: 20px;
+            width: 200px;
         }
         #options-list {
+            max-height: 200px;
             width: 300px;
-            height: auto;
+            overflow-y: auto;
             border: 1px solid #000;
             margin-top: 10px;
             padding: 5px;
@@ -40,13 +46,15 @@
     <label for="gold-calc">高价回收金币预算:</label>
     <input type="number" id="gold-calc" required>
 
-    <div class="options-box">
-        <label for="option-input">请添加高价回收草药:</label>
-        <input type="text" id="option-input" placeholder="输入草药名称">
-        <button type="button" onclick="addOption()">+</button>
-    </div>
+    <div class="container">
+        <div class="options-box">
+            <label for="option-input">请添加高价回收草药:</label>
+            <input type="text" id="option-input" placeholder="输入草药名称">
+            <button type="button" onclick="addOption()">+</button>
+        </div>
 
-    <div id="options-list"></div>
+        <div id="options-list"></div>
+    </div>
 
     <button type="button" onclick="calculate()">计算</button>
 
@@ -63,6 +71,8 @@
             "项5": { "gold": [140, 85, 55, 30] }
         };
 
+        let firstSelectedOption = null;
+
         function addOption() {
             const optionName = document.getElementById('option-input').value;
             const optionsList = document.getElementById('options-list');
@@ -77,6 +87,12 @@
                 optionItem.setAttribute('data-name', optionName);
                 optionsList.appendChild(optionItem);
                 document.getElementById('option-input').value = ''; // Clear the input
+
+                // Prioritize the first option selected
+                if (!firstSelectedOption) {
+                    firstSelectedOption = optionItem;
+                    firstSelectedOption.style.backgroundColor = "#f0f0f0";
+                }
             } else {
                 alert('该草药不存在，请输入正确的草药名称');
             }
@@ -89,35 +105,49 @@
             const optionsList = document.getElementById('options-list').children;
             let results = "";
 
+            // First, handle the prioritized option (if any)
+            if (firstSelectedOption) {
+                goldRemaining = processOption(firstSelectedOption, goldRemaining);
+            }
+
+            // Then, handle the rest of the options
             for (let i = 0; i < optionsList.length; i++) {
                 const optionItem = optionsList[i];
-                const optionName = optionItem.getAttribute('data-name');
-                const goldPrices = priceList[optionName].gold;
-
-                let totalQty = 0;
-                let quantities = [0, 0, 0, 0]; // To store quantities for each quality
-
-                // Prioritize purchasing from the highest quality to the lowest quality
-                for (let k = 0; k < goldPrices.length; k++) {
-                    if (goldPrices[k] <= goldRemaining) {
-                        let maxQty = Math.floor(goldRemaining / goldPrices[k]);
-                        quantities[k] = maxQty;
-                        totalQty += maxQty;
-                        goldRemaining -= maxQty * goldPrices[k];
-                    }
+                if (optionItem !== firstSelectedOption) {
+                    goldRemaining = processOption(optionItem, goldRemaining);
                 }
-
-                // Display results
-                results += `${optionName}: 可购数量 = ${totalQty}<br>`;
-                results += `购买明细: 质量1: ${quantities[0]}, 质量2: ${quantities[1]}, 质量3: ${quantities[2]}, 质量4: ${quantities[3]}<br><br>`;
-
-                // Update input fields with the maximum quantities (for highest quality)
-                optionItem.querySelector('input').value = quantities[0];
             }
 
             results += `<br>金币剩余: ${goldRemaining}`;
-
             document.getElementById('results').innerHTML = results;
+        }
+
+        function processOption(optionItem, goldRemaining) {
+            const optionName = optionItem.getAttribute('data-name');
+            const goldPrices = priceList[optionName].gold;
+
+            let totalQty = 0;
+            let quantities = [0, 0, 0, 0]; // To store quantities for each quality
+
+            // Prioritize purchasing from the highest quality to the lowest quality
+            for (let k = 0; k < goldPrices.length; k++) {
+                if (goldPrices[k] <= goldRemaining) {
+                    let maxQty = Math.floor(goldRemaining / goldPrices[k]);
+                    quantities[k] = maxQty;
+                    totalQty += maxQty;
+                    goldRemaining -= maxQty * goldPrices[k];
+                }
+            }
+
+            // Display results
+            const result = `${optionName}: 可购数量 = ${totalQty}<br>
+            购买明细: 质量1: ${quantities[0]}, 质量2: ${quantities[1]}, 质量3: ${quantities[2]}, 质量4: ${quantities[3]}<br><br>`;
+            document.getElementById('results').innerHTML += result;
+
+            // Update input fields with the maximum quantities (for highest quality)
+            optionItem.querySelector('input').value = quantities[0];
+
+            return goldRemaining;
         }
     </script>
 </body>
