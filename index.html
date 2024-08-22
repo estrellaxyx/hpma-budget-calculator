@@ -66,11 +66,28 @@
     <script>
         // Prices for each item with four different qualities (in gold)
         const priceList = {
-            "项1": { "gold": [100, 60, 40, 20] },
-            "项2": { "gold": [150, 90, 60, 30] },
-            "项3": { "gold": [120, 70, 45, 25] },
-            "项4": { "gold": [180, 120, 80, 40] },
-            "项5": { "gold": [140, 85, 55, 30] }
+            "毒牙天竺葵": { "gold": [0, 12, 9, 8] },
+            "玫瑰": { "gold": [47, 42, 34, 30] },
+            "泡泡豆荚": { "gold": [0, 85, 62, 55] },
+            "中国咬人甘蓝": { "gold": [0, 57, 40, 36] },
+            "曼德拉草": { "gold": [0, 24, 22, 15] },
+            "鳃囊草": { "gold":[0, 6, 4, 3] },
+            "水仙": { "gold":[0, 0, 50, 45] },
+            "向日葵": { "gold":[0 ,0, 96, 75] },
+            "睡莲": { "gold":[299, 271, 221, 199] },
+            "绣球花": { "gold":[237, 215, 150, 135] },
+            "铃兰": { "gold":[63, 57, 46, 42] },
+            "羽衣草": { "gold":[116, 105, 96, 76] },
+            "菱叶丁香蓼": { "gold":[88, 80, 65, 52] },
+            "红波水草": { "gold":[132, 120, 98, 78] },
+            "秋海棠": { "gold":[80, 72, 58, 45] },
+            "巨藻": { "gold":[53, 48, 44, 30] },
+            "绿菊": { "gold":[118, 107, 87, 69] },
+            "米布米宝": { "gold":[0, 62, 50, 39] },
+            "凤眼莲": { "gold":[72, 65, 52, 41] },
+            "三色堇": { "gold":[94, 85, 62, 55] },
+            "五月花": { "gold":[205, 186, 150, 117] },
+            "牡丹": { "gold":[0, 0, 58, 45] },
         };
 
         let selectedOptions = [];
@@ -135,8 +152,8 @@ function processOption(optionItem, goldRemaining) {
     }
 
     // Accumulate the result string
-    const result = `${optionName}: 可购数量 = ${totalQty}<br>
-    购买明细: 质量1: ${quantities[0]}, 质量2: ${quantities[1]}, 质量3: ${quantities[2]}, 质量4: ${quantities[3]}<br><br>`;
+    const result = `${optionName}: 数量 = ${totalQty}<br>
+    明细: 稀有色金品: ${quantities[0]}, 金品: ${quantities[1]}, 紫品: ${quantities[2]}, 蓝品: ${quantities[3]}<br><br>`;
 
     return {
         html: result,
