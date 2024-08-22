@@ -94,28 +94,28 @@
                 const optionName = optionItem.getAttribute('data-name');
                 const goldPrices = priceList[optionName].gold;
 
-                let maxGoldQty = 0;
-                let chosenGoldQuality = -1;
+                let totalQty = 0;
+                let quantities = [0, 0, 0, 0]; // To store quantities for each quality
 
-                // Calculate the maximum quantity for gold, starting from the highest quality
+                // Prioritize purchasing from the highest quality to the lowest quality
                 for (let k = 0; k < goldPrices.length; k++) {
                     if (goldPrices[k] <= goldRemaining) {
-                        maxGoldQty = Math.floor(goldRemaining / goldPrices[k]);
-                        chosenGoldQuality = k;
-                        goldRemaining -= maxGoldQty * goldPrices[k];
-                        break;  // Only use the highest possible quality
+                        let maxQty = Math.floor(goldRemaining / goldPrices[k]);
+                        quantities[k] = maxQty;
+                        totalQty += maxQty;
+                        goldRemaining -= maxQty * goldPrices[k];
                     }
                 }
 
                 // Display results
-                results += `${optionName}:
-                可购数量 = ${maxGoldQty} (品质: ${chosenGoldQuality + 1})<br>`;
+                results += `${optionName}: 可购数量 = ${totalQty}<br>`;
+                results += `购买明细: 质量1: ${quantities[0]}, 质量2: ${quantities[1]}, 质量3: ${quantities[2]}, 质量4: ${quantities[3]}<br><br>`;
 
-                // Update input fields with the maximum quantities
-                optionItem.querySelector('input').value = maxGoldQty;
+                // Update input fields with the maximum quantities (for highest quality)
+                optionItem.querySelector('input').value = quantities[0];
             }
 
-            results += `<br>金件剩余: ${goldRemaining}`;
+            results += `<br>金币剩余: ${goldRemaining}`;
 
             document.getElementById('results').innerHTML = results;
         }
