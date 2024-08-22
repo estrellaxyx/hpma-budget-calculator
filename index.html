@@ -108,14 +108,16 @@
 
     selectedOptions.forEach(optionName => {
         const optionItem = document.querySelector(`.option-item[data-name="${optionName}"]`);
-        goldRemaining = processOption(optionItem, goldRemaining, results);
+        const result = processOption(optionItem, goldRemaining);
+        results += result.html;
+        goldRemaining = result.goldRemaining;
     });
 
     results += `<br>金币剩余: ${goldRemaining}`;
     document.getElementById('results').innerHTML = results;  // Set the innerHTML only once
 }
 
-function processOption(optionItem, goldRemaining, results) {
+function processOption(optionItem, goldRemaining) {
     const optionName = optionItem.getAttribute('data-name');
     const goldPrices = priceList[optionName].gold;
 
@@ -133,11 +135,15 @@ function processOption(optionItem, goldRemaining, results) {
     }
 
     // Accumulate the result string
-    results += `${optionName}: 可购数量 = ${totalQty}<br>
+    const result = `${optionName}: 可购数量 = ${totalQty}<br>
     购买明细: 质量1: ${quantities[0]}, 质量2: ${quantities[1]}, 质量3: ${quantities[2]}, 质量4: ${quantities[3]}<br><br>`;
 
-    return goldRemaining;
+    return {
+        html: result,
+        goldRemaining: goldRemaining
+    };
 }
+
 
 
         // Initialize the options when the page loads
