@@ -59,8 +59,7 @@
     </div>
     <input type="checkbox" id="if-rare" name="if-rare" value="rare">
       <label for="if-rare">是否考虑稀有色金品</label><br>
-    <!--button type="button" onclick="calculate()">计算</button-->
-     <button type="button" onclick="dynamicProgramming()">计算</button>
+    <button type="button" onclick="calculate()">计算</button>
     <h3>计算结果:</h3>
     <div id="results"></div>
 
@@ -92,41 +91,6 @@
         };
 
         let selectedOptions = [];
-
-        function dynamicProgramming() {
-    const budget = parseInt(document.getElementById('gold-calc').value);
-    const options = selectedOptions;
-    const n = options.length;
-
-    // Initialize DP array
-    const dp = Array(budget + 1).fill(-Infinity);
-    dp[0] = 0;  // With zero budget, you can buy zero items
-
-    // Process each option
-    options.forEach(optionName => {
-        const goldPrices = priceList[optionName].gold;
-        const minPrice = Math.min(...goldPrices);
-        
-        // Update DP array based on item prices
-        if (minPrice > 0) {
-            for (let i = budget; i >= minPrice; i--) {
-                for (let price of goldPrices) {
-                    if (i >= price) {
-                        dp[i] = Math.max(dp[i], dp[i - price] + 1);
-                    }
-                }
-            }
-        } else {
-            // Handle items with price of 0
-            for (let i = 0; i <= budget; i++) {
-                dp[i] = Math.max(dp[i], dp[i] + 1);
-            }
-        }
-    });
-
-    // Output result
-    document.getElementById('results').innerHTML = `最大购买数量: ${dp[budget]}`;
-}
 
         // Initialize the options as buttons
         function initOptions() {
