@@ -101,44 +101,44 @@
         }
 
         function calculate() {
-            const goldCalc = parseInt(document.getElementById('gold-calc').value);
-            let goldRemaining = goldCalc;
+    const goldCalc = parseInt(document.getElementById('gold-calc').value);
+    let goldRemaining = goldCalc;
 
-            let results = "";
+    let results = "";  // Accumulate results as a single string
 
-            selectedOptions.forEach(optionName => {
-                const optionItem = document.querySelector(`.option-item[data-name="${optionName}"]`);
-                goldRemaining = processOption(optionItem, goldRemaining);
-            });
+    selectedOptions.forEach(optionName => {
+        const optionItem = document.querySelector(`.option-item[data-name="${optionName}"]`);
+        goldRemaining = processOption(optionItem, goldRemaining, results);
+    });
 
-            results += `<br>金币剩余: ${goldRemaining}`;
-            document.getElementById('results').innerHTML = results;
+    results += `<br>金币剩余: ${goldRemaining}`;
+    document.getElementById('results').innerHTML = results;  // Set the innerHTML only once
+}
+
+function processOption(optionItem, goldRemaining, results) {
+    const optionName = optionItem.getAttribute('data-name');
+    const goldPrices = priceList[optionName].gold;
+
+    let totalQty = 0;
+    let quantities = [0, 0, 0, 0]; // To store quantities for each quality
+
+    // Prioritize purchasing from the highest quality to the lowest quality
+    for (let k = 0; k < goldPrices.length; k++) {
+        if (goldPrices[k] <= goldRemaining) {
+            let maxQty = Math.floor(goldRemaining / goldPrices[k]);
+            quantities[k] = maxQty;
+            totalQty += maxQty;
+            goldRemaining -= maxQty * goldPrices[k];
         }
+    }
 
-        function processOption(optionItem, goldRemaining) {
-            const optionName = optionItem.getAttribute('data-name');
-            const goldPrices = priceList[optionName].gold;
+    // Accumulate the result string
+    results += `${optionName}: 可购数量 = ${totalQty}<br>
+    购买明细: 质量1: ${quantities[0]}, 质量2: ${quantities[1]}, 质量3: ${quantities[2]}, 质量4: ${quantities[3]}<br><br>`;
 
-            let totalQty = 0;
-            let quantities = [0, 0, 0, 0]; // To store quantities for each quality
+    return goldRemaining;
+}
 
-            // Prioritize purchasing from the highest quality to the lowest quality
-            for (let k = 0; k < goldPrices.length; k++) {
-                if (goldPrices[k] <= goldRemaining) {
-                    let maxQty = Math.floor(goldRemaining / goldPrices[k]);
-                    quantities[k] = maxQty;
-                    totalQty += maxQty;
-                    goldRemaining -= maxQty * goldPrices[k];
-                }
-            }
-
-            // Display results
-            const result = `${optionName}: 可购数量 = ${totalQty}<br>
-            购买明细: 质量1: ${quantities[0]}, 质量2: ${quantities[1]}, 质量3: ${quantities[2]}, 质量4: ${quantities[3]}<br><br>`;
-            document.getElementById('results').innerHTML += result;
-
-            return goldRemaining;
-        }
 
         // Initialize the options when the page loads
         window.onload = initOptions;
