@@ -44,46 +44,49 @@
     <input type="number" id="gold-calc" required>
 
     <div class="options-box">
-        <label for="option-input">请添加高价回收草药:</label>
-        <input type="text" id="option-input" placeholder="输入草药名称">
-        <button type="button" onclick="addOption()">+</button>
-    </div>
+    <label for="option-input">请添加高价回收草药:</label>
+    <input type="text" id="option-input" placeholder="输入草药名称">
+    <button type="button" onclick="addOption()">+</button>
+</div>
 
-    <div id="options-list"></div>
+<!-- Scrollable options list -->
+<div id="options-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
 
-    <button type="button" onclick="calculate()">计算</button>
+<button type="button" onclick="calculate()">计算</button>
 
-    <h3>计算结果:</h3>
-    <div id="results"></div>
+<h3>计算结果:</h3>
+<div id="results"></div>
 
-    <script>
-        // Prices for each item with four different qualities (in either gems or gold)
-        const priceList = {
-            "项1": { "gem": [5, 2, 0, 0], "gold": [0, 0, 40, 20] },
-            "项2": { "gem": [80, 50, 30, 15], "gold": [150, 90, 60, 30] },
-            "项3": { "gem": [60, 40, 25, 12], "gold": [120, 70, 45, 25] },
-            "项4": { "gem": [90, 60, 40, 20], "gold": [180, 120, 80, 40] },
-            "项5": { "gem": [70, 45, 30, 15], "gold": [140, 85, 55, 30] }
-        };
+<script>
+    // Prices for each item with four different qualities (in either gems or gold)
+    const priceList = {
+        "项1": { "gem": [5, 2, 0, 0], "gold": [0, 0, 40, 20] },
+        "项2": { "gem": [80, 50, 30, 15], "gold": [150, 90, 60, 30] },
+        "项3": { "gem": [60, 40, 25, 12], "gold": [120, 70, 45, 25] },
+        "项4": { "gem": [90, 60, 40, 20], "gold": [180, 120, 80, 40] },
+        "项5": { "gem": [70, 45, 30, 15], "gold": [140, 85, 55, 30] }
+    };
 
-        function addOption() {
-            const optionName = document.getElementById('option-input').value;
-            const optionsList = document.getElementById('options-list');
+    function addOption() {
+        const optionName = document.getElementById('option-input').value;
+        const optionsList = document.getElementById('options-list');
 
-            if (optionName in priceList) {
-                const optionItem = document.createElement('div');
-                optionItem.className = 'option-item';
-                optionItem.innerHTML = `
-                    ${optionName}
-                    <input type="number" value="0" min="0" style="width: 50px;" readonly>
-                `;
-                optionItem.setAttribute('data-name', optionName);
-                optionsList.appendChild(optionItem);
-                document.getElementById('option-input').value = ''; // Clear the input
-            } else {
-                alert('该草药不存在，请输入正确的草药名称');
-            }
+        if (optionName in priceList) {
+            const optionItem = document.createElement('div');
+            optionItem.className = 'option-item';
+            optionItem.innerHTML = `
+                ${optionName}
+                <input type="number" value="0" min="0" style="width: 50px;" readonly>
+            `;
+            optionItem.setAttribute('data-name', optionName);
+            optionsList.appendChild(optionItem);
+            document.getElementById('option-input').value = ''; // Clear the input
+        } else {
+            alert('该草药不存在，请输入正确的草药名称');
         }
+    }
+</script>
+
 
         function calculate() {
             const gemCalc = parseInt(document.getElementById('gem-calc').value);
