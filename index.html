@@ -1,16 +1,141 @@
-<h1>哈利波特 · 魔法觉醒</h1>
-<h2>草药商店预算计算器</h2>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>哈利波特 · 魔法觉醒 草药商店预算计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label, input, button {
+            margin: 10px 0;
+            display: block;
+        }
+        .options-box {
+            margin-top: 20px;
+        }
+        #options-list {
+            width: 300px;
+            height: auto;
+            border: 1px solid #000;
+            margin-top: 10px;
+            padding: 5px;
+        }
+        .option-item {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .option-item input {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>高价回收</h2>
 
-<h3>高价回收</h3>
-<p>本周高价回收宝石预算是: </p>
-<p>本周高价回收金币预算是: </p>
-<p>请选择本周高价回收草药: </p>
+    <label for="gem-calc">高价回收宝石预算:</label>
+    <input type="number" id="gem-calc" required>
 
-<h4><b>计算结果: </b></h4>
+    <label for="gold-calc">高价回收金币预算:</label>
+    <input type="number" id="gold-calc" required>
 
+    <div class="options-box">
+        <label for="option-input">请添加高价回收草药:</label>
+        <input type="text" id="option-input" placeholder="输入草药名称">
+        <button type="button" onclick="addOption()">+</button>
+    </div>
 
-<h3>普通回收</h3>
-<p>本周普通回收宝石预算是: </p>
-<p>本周普通回收金币预算是: </p>
+    <div id="options-list"></div>
 
-<h4><b>计算结果: </b></h4>
+    <button type="button" onclick="calculate()">计算</button>
+
+    <h3>计算结果:</h3>
+    <div id="results"></div>
+
+    <script>
+        // Prices for each item with four different qualities (in either gems or gold)
+        const priceList = {
+            "项1": { "gem": [5, 2, 0, 0], "gold": [0, 0, 40, 20] },
+            "项2": { "gem": [80, 50, 30, 15], "gold": [150, 90, 60, 30] },
+            "项3": { "gem": [60, 40, 25, 12], "gold": [120, 70, 45, 25] },
+            "项4": { "gem": [90, 60, 40, 20], "gold": [180, 120, 80, 40] },
+            "项5": { "gem": [70, 45, 30, 15], "gold": [140, 85, 55, 30] }
+        };
+
+        function addOption() {
+            const optionName = document.getElementById('option-input').value;
+            const optionsList = document.getElementById('options-list');
+
+            if (optionName in priceList) {
+                const optionItem = document.createElement('div');
+                optionItem.className = 'option-item';
+                optionItem.innerHTML = `
+                    ${optionName}
+                    <input type="number" value="0" min="0" style="width: 50px;" readonly>
+                `;
+                optionItem.setAttribute('data-name', optionName);
+                optionsList.appendChild(optionItem);
+                document.getElementById('option-input').value = ''; // Clear the input
+            } else {
+                alert('该草药不存在，请输入正确的草药名称');
+            }
+        }
+
+        function calculate() {
+            const gemCalc = parseInt(document.getElementById('gem-calc').value);
+            const goldCalc = parseInt(document.getElementById('gold-calc').value);
+
+            let gemRemaining = gemCalc;
+            let goldRemaining = goldCalc;
+
+            const optionsList = document.getElementById('options-list').children;
+            let results = "";
+
+            for (let i = 0; i < optionsList.length; i++) {
+                const optionItem = optionsList[i];
+                const optionName = optionItem.getAttribute('data-name');
+                const gemPrices = priceList[optionName].gem;
+                const goldPrices = priceList[optionName].gold;
+
+                let maxGemQty = 0, maxGoldQty = 0;
+                let chosenGemQuality = -1, chosenGoldQuality = -1;
+
+                // Calculate the maximum quantity for gems, starting from the highest quality
+                for (let j = 0; j < gemPrices.length; j++) {
+                    if (gemPrices[j] <= gemRemaining) {
+                        maxGemQty = Math.floor(gemRemaining / gemPrices[j]);
+                        chosenGemQuality = j;
+                        gemRemaining -= maxGemQty * gemPrices[j];
+                        break;  // Only use the highest possible quality
+                    }
+                }
+
+                // Calculate the maximum quantity for gold, starting from the highest quality
+                for (let k = 0; k < goldPrices.length; k++) {
+                    if (goldPrices[k] <= goldRemaining) {
+                        maxGoldQty = Math.floor(goldRemaining / goldPrices[k]);
+                        chosenGoldQuality = k;
+                        goldRemaining -= maxGoldQty * goldPrices[k];
+                        break;  // Only use the highest possible quality
+                    }
+                }
+
+                // Display results
+                results += `${optionName}:
+                可购宝石数量 = ${maxGemQty} (品质: ${chosenGemQuality + 1}),
+                可购金件数量 = ${maxGoldQty} (品质: ${chosenGoldQuality + 1})<br>`;
+
+                // Update input fields with the maximum quantities
+                optionItem.querySelector('input').value = maxGemQty + maxGoldQty;
+            }
+
+            results += `<br>宝石剩余: ${gemRemaining}`;
+            results += `<br>金件剩余: ${goldRemaining}`;
+
+            document.getElementById('results').innerHTML = results;
+        }
+    </script>
+</body>
+</html>
