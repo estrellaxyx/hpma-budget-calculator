@@ -57,8 +57,11 @@
             </div>
         </div>
     </div>
+    <label for="if-rare">是否考虑稀有色金品</label>
     <input type="checkbox" id="if-rare" name="if-rare" value="rare">
-      <label for="if-rare">是否考虑稀有色金品</label><br>
+    <br>
+    <label for="if-rare">是否为高价收购（4倍价格）</label>
+    <input type="checkbox" id="if-high" name="if-high" value="high">
     <button type="button" onclick="calculate()">计算</button>
     <h3>计算结果:</h3>
     <div id="results"></div>
@@ -147,11 +150,15 @@
                 k = 1;
             }
             for (k; k < goldPrices.length; k++) {
-                if (goldPrices[k] <= goldRemaining && goldPrices[k] != 0) {
-                    let maxQty = Math.floor(goldRemaining / goldPrices[k]);
+                let priceEach = goldPrices[k];
+                if(document.getElementById("if-high").checked==true){
+                    priceEach = goldPrices[k]*4;
+                }
+                if (priceEach <= goldRemaining && priceEach != 0) {
+                    let maxQty = Math.floor(goldRemaining / priceEach);
                     quantities[k] = maxQty;
                     totalQty += maxQty;
-                    goldRemaining -= maxQty * goldPrices[k];
+                    goldRemaining -= maxQty * priceEach;
                 }
             }
 
